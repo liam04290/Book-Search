@@ -1,57 +1,44 @@
-// route to get logged in user's info (needs the token)
-export const getMe = (token) => {
-  return fetch('/api/users/me', {
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: `Bearer ${token}`,
-    },
-  });
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_ME, ADD_USER, LOGIN_USER, SAVE_BOOK, REMOVE_BOOK } from './queries';
+
+export const getMe = () => {
+  return useQuery(GET_ME);
 };
 
 export const createUser = (userData) => {
-  return fetch('/api/users', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData),
+  return useMutation(ADD_USER, {
+    variables: userData,
   });
 };
 
 export const loginUser = (userData) => {
-  return fetch('/api/users/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData),
+  return useMutation(LOGIN_USER, {
+    variables: userData,
   });
 };
 
-// save book data for a logged in user
 export const saveBook = (bookData, token) => {
-  return fetch('/api/users', {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: `Bearer ${token}`,
+  return useMutation(SAVE_BOOK, {
+    variables: { bookData },
+    context: {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     },
-    body: JSON.stringify(bookData),
   });
 };
 
-// remove saved book data for a logged in user
 export const deleteBook = (bookId, token) => {
-  return fetch(`/api/users/books/${bookId}`, {
-    method: 'DELETE',
-    headers: {
-      authorization: `Bearer ${token}`,
+  return useMutation(REMOVE_BOOK, {
+    variables: { bookId },
+    context: {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     },
   });
 };
 
-// make a search to google books api
-// https://www.googleapis.com/books/v1/volumes?q=harry+potter
 export const searchGoogleBooks = (query) => {
   return fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
 };
